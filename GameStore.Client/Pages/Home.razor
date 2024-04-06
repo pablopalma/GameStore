@@ -1,0 +1,106 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager;
+@inject GameClient client;
+@using GameStore.Client.Models
+
+<PageTitle>Home</PageTitle>
+
+<h1>Game Catalog</h1>
+
+
+<div class="row mb-4">
+    <div class="col-sm-6">
+        <button type="button" class="btn btn-primary" onclick="@AddGame">Add Game</button>
+    </div>
+    <div class="col">
+        <input type="text" class="form-control" placeholder="Search game by name or genre" 
+        @bind="_searchText"
+        @bind:event="oninput"
+        @onkeyup="FetchGamesAsync">
+    </div>
+</div>
+
+@if(_games is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <DeleteGame Game="@_currentGame" OnClose="@OnDeleteModalCloseAsync">
+
+    </DeleteGame>
+
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+        <th>Id</th>
+        <th>Name</th>
+        <th>Genre</th>
+        <th>Price</th>
+        <th>Release Date</th>
+        <th></th>
+        </thead>
+        <tbody>
+            @foreach (Game game in _games)
+            {
+                <tr>
+                    <td>@game.Id</td>
+                    <td>@game.Name</td>
+                    <td>@game.Genre</td>
+                    <td>@game.Price</td>
+                    <td>@game.ReleaseDate.ToString("MM/dd/yyyy")</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditGame(game.Id))">
+                            <i class="oi oi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                @onclick="(() => _currentGame = game)">
+                            <i class="oi oi-x"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    private Game[]? _games;
+    private Game? _currentGame;
+    private string? _searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchGamesAsync();
+    }
+
+    private void AddGame()
+    {
+        NavigationManager.NavigateTo("/game");
+    }
+
+
+    public void EditGame(int id)
+    {
+        NavigationManager.NavigateTo($"/game/{id}");
+    }
+
+    public void DeleteGame(int id)
+    {
+    }
+
+    public async Task OnDeleteModalCloseAsync(bool accepted)
+    {
+        if (accepted)
+        {
+            await client.RemoveGameAsync(_currentGame!.Id);
+            await FetchGamesAsync();
+        }
+    }
+
+    private async Task FetchGamesAsync()
+    {
+        _games = await client.GetGamesAsync(_searchText);
+    }
+
+}

@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:5062
+
+GET {{baseUrl}}/games
+
+###
+
+//
+GET {{baseUrl}}/games/4
+
+###
+
+POST {{baseUrl}}/games
+Content-Type: application/json
+
+{
+  "name": "Lord Of The Rings",
+  "genre": "RPG/Action,Adventure",
+  "price": 12.15,
+  "releaseDate": "2004-11-09T00:00:00"
+}
+
+###
+
+PUT {{baseUrl}}/games/4
+Content-Type: application/json
+
+{
+  "name": "Lord Of The Rings",
+  "genre": "Action,AA,AA",
+  "price": 22.15,
+  "releaseDate": "2004-11-09T00:00:00"
+}
+
+
+###
+
+DELETE {{baseUrl}}/games/4
