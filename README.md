@@ -11,7 +11,7 @@ This project is a small-scale Application built on .NET 8 and Blazor, serving as
 - **CRUD Operations**: Easily manage your video game catalog with full CRUD functionality.
 - **Blazor**: Leverage the power of Blazor to create interactive and dynamic web interfaces.
 - **.NET 8**: Built on the latest version of .NET, ensuring compatibility and performance enhancements.
-- **MSSQL Server 2018**: Utilize MSSQL Server 2018 as the backend database, offering reliability and scalability for your data storage needs.
+- **MSSQL Server 2018**: Utilize MSSQL Server 2018 as the backend database, offering reliability and scalability for your data storage needs. It also supports running on Docker, providing flexibility in deployment.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ To get started with the GameStore Catalog Management System, follow these steps:
 
 1. Clone this repository to your local machine.
 2. Ensure you have .NET 8 SDK installed.
-3. Set up a MSSQL Server 2018 database for storing your video game catalog data.
+3. Set up a MSSQL Server 2018 database for storing your video game catalog data. You can also use Docker to run MSSQL Server as a service.
 4. Update the connection string in the project configuration to point to your database.
 5. Build and run the project.
 6. Start managing your video game catalog effortlessly!
