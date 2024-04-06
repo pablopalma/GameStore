@@ -36,6 +36,7 @@ else
         <th>Name</th>
         <th>Genre</th>
         <th>Price</th>
+        <th>Stock Unit</th>
         <th>Release Date</th>
         <th></th>
         </thead>
@@ -47,6 +48,7 @@ else
                     <td>@game.Name</td>
                     <td>@game.Genre</td>
                     <td>@game.Price</td>
+                    <td>@game.StockUnit</td>
                     <td>@game.ReleaseDate.ToString("MM/dd/yyyy")</td>
                     <td>
                         <button class="btn btn-primary" @onclick="(() => EditGame(game.Id))">
@@ -83,10 +85,6 @@ else
     public void EditGame(int id)
     {
         NavigationManager.NavigateTo($"/game/{id}");
-    }
-
-    public void DeleteGame(int id)
-    {
     }
 
     public async Task OnDeleteModalCloseAsync(bool accepted)

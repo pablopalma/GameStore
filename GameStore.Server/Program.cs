@@ -1,4 +1,6 @@
 using GameStore.Server.Data;
+using GameStore.Server.Data.Repositories.Implementation;
+using GameStore.Server.Data.Repositories.Interfaces;
 using GameStore.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +19,9 @@ builder.Services.AddCors(options =>
 var connString = builder.Configuration.GetConnectionString("GameStoreContext");
 builder.Services.AddSqlServer<GameStorecontext>(connString);
 
+// Register the repository
+builder.Services.AddScoped<GameRepository>();
+
 var app = builder.Build();
 // Apply CORS policies during request processing
 app.UseCors();
@@ -25,59 +30,51 @@ var group = app.MapGroup("/games");
 group.WithParameterValidation();
 
 // Get /games
-group.MapGet("/", async (string? filter, GameStorecontext context) =>
+//group.MapGet("/", async (string? filter, GameStorecontext context) =>
+//{
+//    var games = context.Games.AsNoTracking();
+
+//    if(filter is not null)
+//    {
+//        games = games.Where(games => games.Name.Contains(filter) || games.Genre.Contains(filter));
+//    }
+
+//    return await games.ToListAsync();
+//});
+
+// Inject the repository into route handlers
+group.MapGet("/", async (string? filter, GameRepository gameRepository) =>
 {
-    var games = context.Games.AsNoTracking();
-
-    if(filter is not null)
-    {
-        games = games.Where(games => games.Name.Contains(filter) || games.Genre.Contains(filter));
-    }
-
-    return await games.ToListAsync();
+    return await gameRepository.GetGamesAsync(filter);
 });
 
 // Get /games/{id}
-group.MapGet("/{id}", async (int id, GameStorecontext context) =>
+group.MapGet("/{id}", async (int id, GameRepository gameRepository) =>
 {
-    Game? game = await context.Games.FindAsync(id);
-
-    if (game is null)
-    {
-        return Results.NotFound();
-    }
-
-    return Results.Ok(game);
+    var game = await gameRepository.GetGameByIdAsync(id);
+    return game != null ? Results.Ok(game) : Results.NotFound();
 })
 .WithName("GetName");
 
 // Post /games
-group.Map("/", async (Game game, GameStorecontext context) =>
+group.Map("/", async (Game game, GameRepository gameRepository) =>
 {
-    context.Games.Add(game);
-    await context.SaveChangesAsync();
-    return Results.CreatedAtRoute("GetName", new {id = game.Id}, game);
+    var gameId = await gameRepository.AddGameAsync(game);
+    return Results.CreatedAtRoute("GetName", new { id = gameId }, game);
 }).WithParameterValidation();
 
 // PUT /games/{id}
-group.Map("/{id}", async (int id, Game updatedGame, GameStorecontext context) =>
+group.Map("/{id}", async (int id, Game updatedGame, GameRepository gameRepository) =>
 {
-    var rowsAffected = await context.Games.Where(game => game.Id == id)
-    .ExecuteUpdateAsync(updates => updates
-    .SetProperty(game => game.Name, updatedGame.Name)
-    .SetProperty(game => game.Genre, updatedGame.Genre)
-    .SetProperty(game => game.Price, updatedGame.Price)
-    .SetProperty(game => game.ReleaseDate, updatedGame.ReleaseDate));
-
-    return rowsAffected == 0 ? Results.NotFound() : Results.NoContent();
+    var result = await gameRepository.UpdateGameAsync(id, updatedGame);
+    return result ? Results.NoContent() : Results.NotFound();
 });
 
 // DELETE games/{id}
-group.MapDelete("/{id}", async (int id, GameStorecontext context) =>
+group.MapDelete("/{id}", async (int id, GameRepository gameRepository) =>
 {
-    var rowsAffected = await context.Games.Where(game => game.Id == id)
-    .ExecuteDeleteAsync();
-    return rowsAffected == 0 ? Results.NotFound() : Results.NoContent();
+    var result = await gameRepository.DeleteGameAsync(id);
+    return result ? Results.NoContent() : Results.NotFound();
 });
 
 app.Run();

@@ -42,6 +42,10 @@ else
                     <InputNumber id="price" @bind-Value="_game.Price" class="form-control"></InputNumber>
                 </div>
                 <div class="mb-3">
+                    <label for="stockUnit" class="form-label">Stock Unit:</label>
+                    <InputNumber id="stockUnit" @bind-Value="_game.StockUnit" class="form-control"></InputNumber>
+                </div>
+                <div class="mb-3">
                     <label for="date" class="form-label">ReleaseDate:</label>
                     <InputDate id="name" @bind-Value="_game.ReleaseDate" class="form-control"></InputDate>
                 </div>
@@ -71,6 +75,7 @@ else
                 Name = foundGame.Name,
                 Genre = foundGame.Genre,
                 Price = foundGame.Price,
+                StockUnit = foundGame.StockUnit,
                 ReleaseDate = foundGame.ReleaseDate
             };
             pageTitle = $"Editing: {_game.Name}";
@@ -81,6 +86,7 @@ else
             {
                 Name = string.Empty,
                 Genre = string.Empty,
+                StockUnit = 0,
                 ReleaseDate = DateTime.UtcNow
             };
 

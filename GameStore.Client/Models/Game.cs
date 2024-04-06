@@ -14,6 +14,8 @@ public class Game
     [Required]
     [Range(1, 100)]
     public decimal Price { get; set; }
+    [Range(1, 1000)]
+    public int StockUnit { get; set; }
     [Required]
     public DateTime ReleaseDate { get; set; }
 }
